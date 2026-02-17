@@ -45,6 +45,26 @@ docker compose up --build
 - Frontend: static build can be hosted on Vercel, Netlify, or any object storage with CDN.
 - For production, use managed MySQL and a reliable MQTT broker (e.g., HiveMQ Cloud).
 
+## Deployment (Render)
+
+This repository includes a `render.yaml` manifest so you can deploy both services on Render.
+
+Steps:
+
+1. Push your code to GitHub (already done).
+2. Sign in to Render and create a new service from GitHub. Select the repository.
+3. Render will detect services from `render.yaml`:
+   - `sensor-monitor-backend` (Docker service) — it builds from `backend/Dockerfile`.
+   - `sensor-monitor-frontend` (Static site) — it runs `cd frontend && npm ci && npm run build` and publishes `frontend/dist`.
+4. In Render dashboard, set environment variables for the backend (Database connection, MQTT broker credentials). Example env vars:
+   - `SQLALCHEMY_DATABASE_URI` (e.g. `mysql+pymysql://user:pass@<HOST>:3306/sensordb`)
+   - `MQTT_BROKER_HOST`, `MQTT_BROKER_PORT`, `MQTT_USERNAME`, `MQTT_PASSWORD`
+5. For the database, you can provision a managed MySQL instance in Render or use an external managed DB and set the connection string.
+
+Notes:
+- The repo also contains a GitHub Actions workflow to build and publish the frontend to `gh-pages` on every push to `main` (.github/workflows/deploy-frontend.yml). If you prefer Render to host the frontend, you can disable that workflow.
+- If you prefer another provider (Fly.io, Railway, VPS), I can add specific deployment scripts or workflows.
+
 ## MQTT payload format
 Expected JSON keys:
 ```json

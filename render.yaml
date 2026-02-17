@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: sensor-monitor-backend
+    env: docker
+    plan: free
+    dockerfilePath: backend/Dockerfile
+    startCommand: "uvicorn app.main:app --host 0.0.0.0 --port 8000"
+    enableAutoDeploy: true
+
+  - type: static
+    name: sensor-monitor-frontend
+    env: static
+    plan: free
+    buildCommand: "cd frontend && npm ci && npm run build"
+    publishPath: "frontend/dist"
+    enableAutoDeploy: true
